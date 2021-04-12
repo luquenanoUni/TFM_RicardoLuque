@@ -349,15 +349,8 @@ def recognize_faces_in_cam(input_embeddings):
     
 cam = cv2.VideoCapture(0)
 
-#face_detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+face_detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
-face_detector = faceCascade.detectMultiScale(
-        gray,
-        scaleFactor=1.1,
-        minNeighbors=5,
-        minSize=(30, 30),
-        flags=cv2.CASCADE_SCALE_IMAGE
-        )
 
 count = 0
 while(True):
@@ -381,7 +374,7 @@ while(True):
         cv2.imwrite("images/input" + str(count) + ".jpg", img[y1:y2,x1:x2])
         
         
-    k = cv2.waitKey(1000) & 0xff # Press 'ESC' for exiting video
+    k = cv2.waitKey(1) & 0xff # Press 'ESC' for exiting video
     if k == 27:
         break
     elif count >= 10: # Take 30 face sample and stop video
@@ -389,5 +382,5 @@ while(True):
 cam.release()
 cv2.destroyAllWindows()
 
-##input_embeddings = create_input_image_embeddings()
-##recognize_faces_in_cam(input_embeddings)
+input_embeddings = create_input_image_embeddings()
+recognize_faces_in_cam(input_embeddings)
