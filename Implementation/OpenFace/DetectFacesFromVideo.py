@@ -57,6 +57,9 @@ while True:
     # Obtain initial detections without confidence filtering
     n_detections = detections.shape[2]
     
+    # Obtain number of valid detections
+    valid_detections=np.sum(detections[0,0,:,2]>CONFIDENCE)
+    
     # For plotting
     fig = plt.figure(figsize=(5, 5))
 
@@ -64,16 +67,13 @@ while True:
     ax = []
     
     # loop over the detections
-    for i in range(0, n_detections):
+    for i in range(n_detections):
         # extract the confidence associated with the prediction
         confidence = detections[0, 0, i, 2]
-        
-        valid_detections=np.sum(detections[0,0,:,2]>CONFIDENCE)
-        
+             
         # filter out weak detections
         if confidence < CONFIDENCE:
             continue
-        
         
         # compute the (x, y)-coordinates of the bounding box
         box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
@@ -92,11 +92,11 @@ while True:
         # R channel for face detector
         cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 0, 255), 2)
         
-        text = "{:.2f}%".format(confidence * 100) 
+        text_detector = "Detector confidence: {:.2f}%".format(confidence * 100) 
         
         # show the confidence of identification
         y_text = startY - 10 if startY - 10 > 10 else startY + 10
-        cv2.putText(frame, text, (startX, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
+        cv2.putText(frame, text_detector, (startX, y_text), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
         
         
         # Initialize tracker
@@ -116,24 +116,40 @@ while True:
             
             # draw bounding box given the tracker
             cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 3)
-                    
+            
+            text_tracker = "Tracker (Re)initialization, user:" + str(i)
+            #text_tracker = "Initializing Tracker: {:i}%".format(n) 
+
+                
+            # Write tracker text on frame
+            y_text_tracker = startY - 10 if startY - 10 > 10 else startY + 10
+            cv2.putText(frame, text_tracker, (endX-180, y_text_tracker), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 0), 2)
+       
+            
         else:
             print('Tracking')
-            for n, tracker in enumerate(trackers):
-                print('Person being tracked',n)
-                tracker.update(frame)
-                pos = tracker.get_position()
-                
-                # unpack the position object
-                startX = int(pos.left())
-                startY = int(pos.top())
-                endX   = int(pos.right())
-                endY   = int(pos.bottom())
+            #for n, tracker in enumerate(trackers):
+                #print('Person being tracked',n)
+            tracker.update(frame)
+            pos = tracker.get_position()
+            
+            # unpack the position object
+            startX_tracker = int(pos.left())
+            startY_tracker = int(pos.top())
+            endX_tracker   = int(pos.right())
+            endY_tracker   = int(pos.bottom())
 
-                # draw bounding box given the tracker
-                cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 3)
-                
-                
+            # draw bounding box given the tracker
+            cv2.rectangle(frame, (startX_tracker, startY_tracker), (endX_tracker, endY_tracker), (0, 255, 0), 3)
+            
+            text_tracker = "Tracker" 
+            #text_tracker = "Tracker:"+str(n)
+            
+            # Write tracker text on frame
+            y_text_tracker = startY_tracker - 10 if startY_tracker - 10 > 10 else startY_tracker + 10
+            cv2.putText(frame, text_tracker, (endX_tracker-50, y_text_tracker), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 0), 2)
+            print("Writing in position:" +str(y_text_tracker))
+            
                    
         
         # Slice the frame to obtain the face
@@ -145,7 +161,6 @@ while True:
         ax[-1].set_title("ID:"+str(i))  
         plt.imshow(plt_face)
         plt.axis('off')
-        
         
         # Save the captured image into the datasets folder
         path="DetectFacesFromVideoImages/person" + str(i) +"frame"+str(frame_number)+ ".jpg"
