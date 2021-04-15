@@ -171,7 +171,7 @@ while True:
         face = frame[startY:endY,startX:endX,::] 
         plt_face = cv2.cvtColor(face, cv2.COLOR_RGB2BGR)
         
-        aligned_face = al_f.face_aligner(frame, face,rect,show=True)
+        aligned_face = al_f.face_aligner(frame, face, rect,show=True)
 
         
         # create subplot and append to ax
@@ -183,7 +183,7 @@ while True:
         # Save the captured image into the datasets folder
         path="DetectFacesFromVideoImages/person" + str(i) +"frame"+str(frame_number)+ ".jpg"
         print(path)
-        cv2.imwrite("DetectFacesFromVideoImages/person" + str(i) +"frame"+str(frame_number)+ ".jpg", face)
+        cv2.imwrite("DetectFacesFromVideoImages/person" + str(i) +"frame"+str(frame_number)+ ".jpg", frame)
         print("Person ID", i)
         
         n_valid_detection +=1 

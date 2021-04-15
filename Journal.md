@@ -21,3 +21,4 @@ Tengo que asignarle a cada tracker un rostro de cada individuo sin que se repita
 Still problems with ID, yet the repetition problem of the same individual being identified twice has been solved. Still each user isn't tracked independently.
 
 ## Thursday 15th 
+Implementing Aligning algorithm based on Facial landmarks
