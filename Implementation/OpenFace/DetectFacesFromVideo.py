@@ -7,10 +7,17 @@ import dlib
 from PIL import Image
 import cv2
 import matplotlib.pyplot as plt
+import align_faces as al_f
+from imutils.face_utils import FaceAligner
+from imutils.face_utils import rect_to_bb
 
 PATH_deploy= 'deploy.prototxt.txt'
 PATH_model= 'res10_300x300_ssd_iter_140000.caffemodel'
 CONFIDENCE= 0.5
+
+# create the facial landmark predictor and the face aligner
+predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+fa = FaceAligner(predictor, desiredFaceWidth=256)
 
 
 input_movie = cv2.VideoCapture("LuqueNanoDaniel.mp4")
@@ -22,11 +29,11 @@ net = cv2.dnn.readNetFromCaffe(PATH_deploy, PATH_model)
 
 #Initialize variables
 frame_number = 0
+n_valid_detection=0
 tracker_frame_number= 0
 reinit = 5
 
 trackers       = []
-
 #For all the video
 while True:
     
@@ -68,12 +75,15 @@ while True:
     
     # loop over the detections
     for i in range(n_detections):
+        
+              
         # extract the confidence associated with the prediction
         confidence = detections[0, 0, i, 2]
              
         # filter out weak detections
         if confidence < CONFIDENCE:
             continue
+        
         
         # compute the (x, y)-coordinates of the bounding box
         box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
@@ -106,7 +116,7 @@ while True:
             
             # For tracking purposes
             rect = dlib.rectangle(int(startX), int(startY), int(endX), int(endY))
-        
+                        
             # Initialize a tracker 
             tracker = dlib.correlation_tracker()        
             tracker.start_track(frame, rect)
@@ -128,34 +138,42 @@ while True:
             
         else:
             print('Tracking')
-            #for n, tracker in enumerate(trackers):
-                #print('Person being tracked',n)
-            tracker.update(frame)
-            pos = tracker.get_position()
             
-            # unpack the position object
-            startX_tracker = int(pos.left())
-            startY_tracker = int(pos.top())
-            endX_tracker   = int(pos.right())
-            endY_tracker   = int(pos.bottom())
-
-            # draw bounding box given the tracker
-            cv2.rectangle(frame, (startX_tracker, startY_tracker), (endX_tracker, endY_tracker), (0, 255, 0), 3)
+            # HERE I NEED TO ADD A FLAG
+            tracker_flag = True
             
-            text_tracker = "Tracker" 
-            #text_tracker = "Tracker:"+str(n)
-            
-            # Write tracker text on frame
-            y_text_tracker = startY_tracker - 10 if startY_tracker - 10 > 10 else startY_tracker + 10
-            cv2.putText(frame, text_tracker, (endX_tracker-50, y_text_tracker), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 0), 2)
-            print("Writing in position:" +str(y_text_tracker))
-            
+            if tracker_flag == True:
+                for n, tracker in enumerate(trackers):
+                    print('Person being tracked',n)
+                    tracker.update(frame)
+                    pos = tracker.get_position()
+                    
+                    # unpack the position object
+                    startX_tracker = int(pos.left())
+                    startY_tracker = int(pos.top())
+                    endX_tracker   = int(pos.right())
+                    endY_tracker   = int(pos.bottom())
+        
+                    # draw bounding box given the tracker
+                    cv2.rectangle(frame, (startX_tracker, startY_tracker), (endX_tracker, endY_tracker), (0, 255, 0), 3)
+                    
+                    text_tracker = "Tracker" 
+                    #text_tracker = "Tracker:"+str(n)
+                    
+                    # Write tracker text on frame
+                    y_text_tracker = startY_tracker - 10 if startY_tracker - 10 > 10 else startY_tracker + 10
+                    cv2.putText(frame, text_tracker, (endX_tracker-50, y_text_tracker), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 0), 2)
+                    print("Writing in position:" +str(y_text_tracker))
+                
                    
         
         # Slice the frame to obtain the face
         face = frame[startY:endY,startX:endX,::] 
         plt_face = cv2.cvtColor(face, cv2.COLOR_RGB2BGR)
+        
+        aligned_face = al_f.face_aligner(frame, face,rect,show=True)
 
+        
         # create subplot and append to ax
         ax.append( fig.add_subplot(1, valid_detections, i+1) )
         ax[-1].set_title("ID:"+str(i))  
@@ -167,7 +185,9 @@ while True:
         print(path)
         cv2.imwrite("DetectFacesFromVideoImages/person" + str(i) +"frame"+str(frame_number)+ ".jpg", face)
         print("Person ID", i)
-    
+        
+        n_valid_detection +=1 
+
     # render plot
     plt.show()
     

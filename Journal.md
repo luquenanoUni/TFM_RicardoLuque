@@ -15,4 +15,9 @@ Solving tracking problems. Still not perfectly done since bounding boxes are tra
 
 ## Tuesday 13th April: 
 Solving user saving and plotting problems. Different people are being identified, yet IDs are still problematic given each specific user. 
-  
+Tengo que asignarle a cada tracker un rostro de cada individuo sin que se repita. 
+
+## Wednesday 14th . 
+Still problems with ID, yet the repetition problem of the same individual being identified twice has been solved. Still each user isn't tracked independently.
+
+## Thursday 15th 
