@@ -1,10 +1,9 @@
 # USAGE
-# python align_faces.py --shape-predictor shape_predictor_68_face_landmarks.dat --image images/example_01.jpg
+# python align_faces_parsed.py --shape-predictor shape_predictor_68_face_landmarks.dat --image images/01.jpg
 
 # import the necessary packages
 from imutils.face_utils import FaceAligner
 from imutils.face_utils import rect_to_bb
-import argparse
 import imutils
 import dlib
 import cv2
