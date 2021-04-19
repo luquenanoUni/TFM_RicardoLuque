@@ -89,6 +89,7 @@ while True:
         box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
         (startX, startY, endX, endY) = box.astype("int")
         
+        # Taking care of limits 
         if startX < 0:
             startX = 0
         if startY < 0:
@@ -98,8 +99,11 @@ while True:
         if endY > h:
             endY = h
         
+        # For tracking and alignment purposes
+        rect = dlib.rectangle(int(startX), int(startY), int(endX), int(endY))
+        
         # draw bounding box of the face given the face detector
-        # R channel for face detector
+        # RED bounding box for face detector
         cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 0, 255), 2)
         
         text_detector = "Detector confidence: {:.2f}%".format(confidence * 100) 
@@ -114,8 +118,6 @@ while True:
             
             print('(Re)Initializing Tracker')
             
-            # For tracking purposes
-            rect = dlib.rectangle(int(startX), int(startY), int(endX), int(endY))
                         
             # Initialize a tracker 
             tracker = dlib.correlation_tracker()        
@@ -171,7 +173,7 @@ while True:
         face = frame[startY:endY,startX:endX,::] 
         plt_face = cv2.cvtColor(face, cv2.COLOR_RGB2BGR)
         
-        aligned_face = al_f.face_aligner(frame, face, rect,show=True)
+        aligned_face = al_f.face_aligner(frame, rect, show=True)
 
         
         # create subplot and append to ax
