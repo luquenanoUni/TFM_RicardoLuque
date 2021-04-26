@@ -8,8 +8,10 @@ from PIL import Image
 import cv2
 import matplotlib.pyplot as plt
 import align_faces as al_f
+import equalize_image as eq_i
 from imutils.face_utils import FaceAligner
 from imutils.face_utils import rect_to_bb
+
 
 PATH_deploy= 'deploy.prototxt.txt'
 PATH_model= 'res10_300x300_ssd_iter_140000.caffemodel'
@@ -173,8 +175,16 @@ while True:
         face = frame[startY:endY,startX:endX,::] 
         plt_face = cv2.cvtColor(face, cv2.COLOR_RGB2BGR)
         
-        aligned_face = al_f.face_aligner(frame, rect, show=True)
-
+        # Preprocess Image
+        # Align given facial landmarks
+        _, aligned_face = al_f.face_aligner(frame, rect, show=True)
+        
+        # Compensate color for histogra equalization
+        final_face = eq_i.RGB_hist_equalization(aligned_face)
+        
+        #final_face = cv2.equalizeHist(aligned_face)
+        cv2.imshow('final face',final_face)
+        key = cv2.waitKey(0)        
         
         # create subplot and append to ax
         ax.append( fig.add_subplot(1, valid_detections, i+1) )
@@ -185,7 +195,7 @@ while True:
         # Save the captured image into the datasets folder
         path="DetectFacesFromVideoImages/person" + str(i) +"frame"+str(frame_number)+ ".jpg"
         print(path)
-        cv2.imwrite("DetectFacesFromVideoImages/person" + str(i) +"frame"+str(frame_number)+ ".jpg", frame)
+        cv2.imwrite("DetectFacesFromVideoImages/person" + str(i) +"frame"+str(frame_number)+ ".jpg", final_face)
         print("Person ID", i)
         
         n_valid_detection +=1 

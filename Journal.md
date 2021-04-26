@@ -17,8 +17,29 @@ Solving tracking problems. Still not perfectly done since bounding boxes are tra
 Solving user saving and plotting problems. Different people are being identified, yet IDs are still problematic given each specific user. 
 Tengo que asignarle a cada tracker un rostro de cada individuo sin que se repita. 
 
-## Wednesday 14th . 
+## Wednesday, April 14th  
 Still problems with ID, yet the repetition problem of the same individual being identified twice has been solved. Still each user isn't tracked independently.
 
-## Thursday 15th 
+## Thursday, April 15th 
 Implementing Aligning algorithm based on Facial landmarks
+
+
+## Friday, April 16th 
+Drawing diagrams for the whole system. Organizing some scripts and locations for merging pieces of code together. Writing down a bit of the implementation on Overleaf. Finishing the alignment algorithm merging into the main code
+
+## Monday, April 19th
+Trying out contrastNet: Cnn-Based Detection of Generic Contrast Adjustment with Jpeg Post-Processing [link](https://github.com/andreacos/ContrastNet). Didn't work due to lack of parametrization given the vagueness of the paper. A simple histogram manipulation is performed, so that all images colors are equalized.
+
+
+## Tuesday, April 20th 
+Facial recognition works for contrastive loss, however similar looking features usch as presence of glasses, similar facial expressions and/or skin tone make it hard for the system to achieve a correct person re-Identification. 
+
+## Wednesday, April 21st
+Trying to merge the pretrained model to the existing siamese network, so that a different backbone (aiming to improve performance) is used. Before this models should be trained and weights saved so that they're called from presaved weights instead.
+
+## Thursday, April 22nd
+Fetching the trained models reaching an accuracy of 0.84 on the LFW dataset. 
+**MODELS ARE SAVED LOCALLY, THEY CAN'T BE PUSED, WILL BE UPLOADED TO BOX**
+
+## Friday, April 23rd.
+Implementation of One shot learning with triplet loss. We are not building a direct classifier, we are building a similarity comparer. Problems within the network; How long should your embedding be? Four numbers? 40? More? The idea is that your embedding must be able to contain a “good enough” representation of your class to differentiate it from the others. The embedding length is a new hyper-parameter of the problem
