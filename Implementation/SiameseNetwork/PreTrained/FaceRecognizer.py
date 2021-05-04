@@ -20,8 +20,8 @@ import numpy as np
 from numpy import genfromtxt
 import pandas as pd
 import tensorflow as tf
-from utils import LRN2D
 import utils
+from utils import LRN2D
 
 
 myInput = Input(shape=(96, 96, 3))
