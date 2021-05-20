@@ -303,7 +303,6 @@ def create_input_image_embeddings():
 
     return input_embeddings
 
-
 def recognize_faces_in_cam(input_embeddings):
     
 
